@@ -1,4 +1,4 @@
-import { prisma } from "@/lib/data/db";
+import { prisma, ensureDatabaseInitialized } from "@/lib/data/db";
 import {
   EventWithDetails,
   IEventRepository,
@@ -10,6 +10,17 @@ import {
   VendorModel,
 } from "@/lib/domain/types";
 import { CategoryKey, EventType, TimelinePhase } from "@/lib/config/constants";
+
+let initPromise: Promise<void> | null = null;
+async function ensureInit(): Promise<void> {
+  if (!initPromise) {
+    initPromise = ensureDatabaseInitialized().catch((err) => {
+      console.error("Database self-healing failed:", err);
+      initPromise = null;
+    });
+  }
+  return initPromise;
+}
 
 export class PrismaEventRepository implements IEventRepository {
   private mapEvent(raw: any): EventModel {
@@ -77,6 +88,7 @@ export class PrismaEventRepository implements IEventRepository {
   }
 
   public async findById(id: string): Promise<EventWithDetails | null> {
+    await ensureInit();
     const raw = await prisma.event.findUnique({
       where: { id },
       include: {
@@ -85,6 +97,12 @@ export class PrismaEventRepository implements IEventRepository {
         vendors: true,
       },
     });
+
+    if (!raw && id.startsWith("demo_")) {
+      const { getDemoEventData } = await import("@/lib/data/seed-data");
+      const seeded = await this.create(getDemoEventData());
+      if (seeded.id === id) return seeded;
+    }
 
     if (!raw) return null;
 
@@ -97,6 +115,7 @@ export class PrismaEventRepository implements IEventRepository {
   }
 
   public async findFirst(): Promise<EventWithDetails | null> {
+    await ensureInit();
     const raw = await prisma.event.findFirst({
       include: {
         categories: true,
@@ -121,6 +140,7 @@ export class PrismaEventRepository implements IEventRepository {
   }
 
   public async listAll(): Promise<EventModel[]> {
+    await ensureInit();
     const events = await prisma.event.findMany({
       orderBy: { createdAt: "desc" },
     });
@@ -133,6 +153,7 @@ export class PrismaEventRepository implements IEventRepository {
     tasks: TaskModel[];
     vendors: VendorModel[];
   }): Promise<EventWithDetails> {
+    await ensureInit();
     const { event, categories, tasks, vendors } = data;
 
     const created = await prisma.event.create({
@@ -210,6 +231,7 @@ export class PrismaEventRepository implements IEventRepository {
       priorities?: string[];
     }
   ): Promise<EventModel> {
+    await ensureInit();
     const updatePayload: any = { ...data };
     if (data.date) {
       updatePayload.date = new Date(`${data.date}T00:00:00Z`);
@@ -227,6 +249,7 @@ export class PrismaEventRepository implements IEventRepository {
   }
 
   public async delete(id: string): Promise<void> {
+    await ensureInit();
     await prisma.event.delete({ where: { id } });
   }
 
@@ -235,6 +258,7 @@ export class PrismaEventRepository implements IEventRepository {
     categoryKey: string,
     data: { allocatedAmount?: number; committedAmount?: number; isManualOverride?: boolean; notes?: string | null }
   ): Promise<BudgetCategoryModel> {
+    await ensureInit();
     const updated = await prisma.budgetCategory.update({
       where: {
         eventId_categoryKey: {
@@ -251,6 +275,7 @@ export class PrismaEventRepository implements IEventRepository {
     id: string,
     data: Partial<Omit<TaskModel, "id" | "eventId">>
   ): Promise<TaskModel> {
+    await ensureInit();
     const updatePayload: any = { ...data };
     if (data.dueDate) {
       updatePayload.dueDate = new Date(`${data.dueDate}T00:00:00Z`);
@@ -270,6 +295,7 @@ export class PrismaEventRepository implements IEventRepository {
     id: string,
     data: Partial<Omit<VendorModel, "id" | "eventId">>
   ): Promise<VendorModel> {
+    await ensureInit();
     const updated = await prisma.vendor.update({
       where: { id },
       data,
@@ -281,6 +307,7 @@ export class PrismaEventRepository implements IEventRepository {
     eventId: string,
     vendor: Omit<VendorModel, "id" | "eventId">
   ): Promise<VendorModel> {
+    await ensureInit();
     const created = await prisma.vendor.create({
       data: {
         eventId,

@@ -4,11 +4,16 @@ import { eventRepository } from "@/lib/data/repositories/prisma-event-repository
 export const dynamic = "force-dynamic";
 
 export default async function HomePage() {
-  const firstEvent = await eventRepository.findFirst();
-
-  if (firstEvent) {
-    redirect(`/events/${firstEvent.id}`);
-  } else {
-    redirect("/events/new");
+  let targetUrl = "/events/new";
+  try {
+    const firstEvent = await eventRepository.findFirst();
+    if (firstEvent) {
+      targetUrl = `/events/${firstEvent.id}`;
+    }
+  } catch (error) {
+    console.error("HomePage finding first event error:", error);
+    targetUrl = "/events/new";
   }
+
+  redirect(targetUrl);
 }
