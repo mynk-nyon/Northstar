@@ -4,6 +4,7 @@ import {
   TaskModel,
   VendorModel,
 } from "@/lib/domain/types";
+import { CategoryKey } from "@/lib/config/constants";
 import { computeBudgetSummary } from "@/lib/domain/budget";
 import { generateTimelineTasks } from "@/lib/domain/timeline";
 
@@ -18,7 +19,7 @@ export function getDemoEventData(): {
   const eventDate = "2027-05-15";
   const guestCount = 120;
   const totalBudget = 38000;
-  const priorities = [
+  const priorities: CategoryKey[] = [
     "catering",
     "venue",
     "photography",
@@ -28,7 +29,7 @@ export function getDemoEventData(): {
     "invitations",
     "favors",
     "contingency",
-  ] as any;
+  ];
 
   const event: EventModel = {
     id: DEMO_EVENT_ID,

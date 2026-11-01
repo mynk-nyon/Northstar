@@ -14,7 +14,6 @@ import {
   ShieldCheck,
   AlertTriangle,
   Sparkles,
-  CheckCircle2,
   Clock,
 } from "lucide-react";
 

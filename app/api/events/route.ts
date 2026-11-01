@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { eventRepository } from "@/lib/data/repositories/prisma-event-repository";
 import { buildEventFromIntake } from "@/lib/domain/intake";
+import { CATEGORY_KEYS } from "@/lib/config/constants";
+import { IntakeAnswers } from "@/lib/domain/types";
 import { z } from "zod";
 
 const IntakeSubmissionSchema = z.object({
@@ -15,7 +17,7 @@ const IntakeSubmissionSchema = z.object({
   venueType: z.enum(["indoor", "outdoor", "hybrid"]).default("indoor"),
   venueHours: z.number().int().min(1).max(24).nullable().optional(),
   cateringRestrictions: z.string().max(1000).nullable().optional(),
-  priorities: z.array(z.string()).min(1).max(20),
+  priorities: z.array(z.enum(CATEGORY_KEYS)).min(1).max(20),
   notes: z.string().max(1000).nullable().optional(),
 });
 
@@ -53,7 +55,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const bundle = buildEventFromIntake(parsed.data as any);
+    const bundle = buildEventFromIntake(parsed.data as IntakeAnswers);
     const createdEvent = await eventRepository.create(bundle);
 
     return NextResponse.json(createdEvent, { status: 201 });

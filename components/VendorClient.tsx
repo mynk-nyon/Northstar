@@ -2,19 +2,17 @@
 
 import React, { useState } from "react";
 import { VendorModel, EventModel, BudgetCategoryModel } from "@/lib/domain/types";
+import { VendorDraftOutput } from "@/lib/ai/types";
 import { CATEGORY_TAXONOMY, CategoryKey } from "@/lib/config/constants";
 import { formatCurrency } from "@/lib/utils/formatting";
 import { Modal } from "@/components/Modal";
 import {
-  Store,
   Mail,
   Copy,
   Check,
   Plus,
   Sparkles,
-  FileText,
   AlertCircle,
-  ExternalLink,
 } from "lucide-react";
 
 interface VendorClientProps {
@@ -35,7 +33,7 @@ export function VendorClient({
   const [messageType, setMessageType] = useState<"inquiry" | "negotiation" | "follow_up">("inquiry");
   const [customQuestions, setCustomQuestions] = useState<string>("");
   const [specialNotes, setSpecialNotes] = useState<string>("");
-  const [draftResult, setDraftResult] = useState<any>(null);
+  const [draftResult, setDraftResult] = useState<VendorDraftOutput | null>(null);
   const [isDrafting, setIsDrafting] = useState<boolean>(false);
   const [isCopied, setIsCopied] = useState<boolean>(false);
 
@@ -269,14 +267,14 @@ export function VendorClient({
               </label>
               <div className="grid grid-cols-3 gap-2">
                 {[
-                  { value: "inquiry", label: "Initial Inquiry & Pricing" },
-                  { value: "negotiation", label: "Scope & Price Alignment" },
-                  { value: "follow_up", label: "Timeline & Run-of-Show" },
+                  { value: "inquiry" as const, label: "Initial Inquiry & Pricing" },
+                  { value: "negotiation" as const, label: "Scope & Price Alignment" },
+                  { value: "follow_up" as const, label: "Timeline & Run-of-Show" },
                 ].map((opt) => (
                   <button
                     key={opt.value}
                     type="button"
-                    onClick={() => setMessageType(opt.value as any)}
+                    onClick={() => setMessageType(opt.value)}
                     className={`p-2.5 rounded-lg text-xs font-semibold border transition text-left ${
                       messageType === opt.value
                         ? "bg-brand-50 text-brand-800 border-brand-300"
@@ -300,6 +298,21 @@ export function VendorClient({
                 value={customQuestions}
                 onChange={(e) => setCustomQuestions(e.target.value)}
                 placeholder="e.g. Dietary options, overtime fee rate, arrival time"
+                className="w-full text-xs p-2.5 border border-slate-200 rounded-lg bg-slate-50 focus:bg-white focus-visible:ring-2"
+              />
+            </div>
+
+            {/* Special Notes */}
+            <div>
+              <label htmlFor="special-notes" className="text-xs font-bold text-slate-700 block mb-1">
+                Additional Context / Special Notes (Optional)
+              </label>
+              <textarea
+                id="special-notes"
+                rows={2}
+                value={specialNotes}
+                onChange={(e) => setSpecialNotes(e.target.value)}
+                placeholder="e.g. Venue has no elevator, preferred arrival by 2 PM"
                 className="w-full text-xs p-2.5 border border-slate-200 rounded-lg bg-slate-50 focus:bg-white focus-visible:ring-2"
               />
             </div>
@@ -400,7 +413,7 @@ export function VendorClient({
               <select
                 id="new-category"
                 value={newVendorCategory}
-                onChange={(e) => setNewVendorCategory(e.target.value as any)}
+                onChange={(e) => setNewVendorCategory(e.target.value as CategoryKey)}
                 className="w-full text-xs p-2.5 border border-slate-200 rounded-lg bg-white"
               >
                 {categories.map((c) => (

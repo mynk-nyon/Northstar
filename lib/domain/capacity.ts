@@ -33,7 +33,7 @@ export function evaluateCapacity(
   }
 
   const utilizationRate = Math.round((safeGuestCount / venueCapacity) * 1000) / 1000;
-  const isBreached = safeGuestCount > venueCapacity;
+  const isBreached = utilizationRate > CAPACITY_BREACH_THRESHOLD || safeGuestCount > venueCapacity;
   const isNearCapacity =
     !isBreached && utilizationRate >= CAPACITY_WARNING_THRESHOLD;
 

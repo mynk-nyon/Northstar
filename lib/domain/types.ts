@@ -179,11 +179,14 @@ export interface IntakeQuestion {
   fieldKey: string;
   type: "select" | "multi_select" | "number" | "text" | "ranking";
   options?: IntakeQuestionOption[];
-  defaultValue?: any;
+  defaultValue?: unknown;
 }
 
 export interface IntakeAnswers {
+  title?: string;
   eventType?: EventType;
+  date?: string;
+  location?: string;
   guestCount?: number;
   totalBudget?: number;
   priorities?: CategoryKey[];
@@ -195,5 +198,10 @@ export interface IntakeAnswers {
   musicVibe?: string;
   decorStyle?: string;
   dateFlexibility?: "fixed" | "flexible_month" | "flexible_season";
-  [key: string]: any;
+  currency?: string;
+  venueType?: "indoor" | "outdoor" | "hybrid";
+  venueHours?: number;
+  cateringRestrictions?: string | null;
+  notes?: string | null;
+  [key: string]: unknown;
 }

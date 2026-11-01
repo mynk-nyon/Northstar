@@ -1,4 +1,11 @@
 import { prisma, ensureDatabaseInitialized } from "@/lib/data/db";
+import type {
+  Event as PrismaEvent,
+  BudgetCategory as PrismaCategory,
+  Task as PrismaTask,
+  Vendor as PrismaVendor,
+  Prisma,
+} from "@prisma/client";
 import {
   EventWithDetails,
   IEventRepository,
@@ -23,7 +30,7 @@ async function ensureInit(): Promise<void> {
 }
 
 export class PrismaEventRepository implements IEventRepository {
-  private mapEvent(raw: any): EventModel {
+  private mapEvent(raw: PrismaEvent): EventModel {
     return {
       id: raw.id,
       title: raw.title,
@@ -34,7 +41,7 @@ export class PrismaEventRepository implements IEventRepository {
       totalBudget: raw.totalBudget,
       currency: raw.currency,
       venueCapacity: raw.venueCapacity,
-      venueType: raw.venueType as any,
+      venueType: (raw.venueType as EventModel["venueType"]) || "indoor",
       venueHours: raw.venueHours,
       cateringRestrictions: raw.cateringRestrictions,
       priorities: (typeof raw.priorities === "string"
@@ -44,7 +51,7 @@ export class PrismaEventRepository implements IEventRepository {
     };
   }
 
-  private mapCategory(raw: any): BudgetCategoryModel {
+  private mapCategory(raw: PrismaCategory): BudgetCategoryModel {
     return {
       id: raw.id,
       eventId: raw.eventId,
@@ -57,14 +64,14 @@ export class PrismaEventRepository implements IEventRepository {
     };
   }
 
-  private mapTask(raw: any): TaskModel {
+  private mapTask(raw: PrismaTask): TaskModel {
     return {
       id: raw.id,
       eventId: raw.eventId,
       title: raw.title,
       dueDate: raw.dueDate instanceof Date ? raw.dueDate.toISOString().slice(0, 10) : String(raw.dueDate).slice(0, 10),
       categoryKey: raw.categoryKey as CategoryKey,
-      status: raw.status as any,
+      status: raw.status as TaskModel["status"],
       owner: raw.owner,
       phase: raw.phase as TimelinePhase,
       dependencyLinks: raw.dependencyLinks ? JSON.parse(raw.dependencyLinks) : [],
@@ -72,7 +79,7 @@ export class PrismaEventRepository implements IEventRepository {
     };
   }
 
-  private mapVendor(raw: any): VendorModel {
+  private mapVendor(raw: PrismaVendor): VendorModel {
     return {
       id: raw.id,
       eventId: raw.eventId,
@@ -82,7 +89,7 @@ export class PrismaEventRepository implements IEventRepository {
       quoteAmount: raw.quoteAmount,
       depositAmount: raw.depositAmount,
       balanceDue: raw.balanceDue,
-      contractStatus: raw.contractStatus as any,
+      contractStatus: raw.contractStatus as VendorModel["contractStatus"],
       notes: raw.notes,
     };
   }
@@ -232,12 +239,13 @@ export class PrismaEventRepository implements IEventRepository {
     }
   ): Promise<EventModel> {
     await ensureInit();
-    const updatePayload: any = { ...data };
-    if (data.date) {
-      updatePayload.date = new Date(`${data.date}T00:00:00Z`);
+    const { priorities, date, ...rest } = data;
+    const updatePayload: Prisma.EventUpdateInput = { ...rest };
+    if (date) {
+      updatePayload.date = new Date(`${date}T00:00:00Z`);
     }
-    if (data.priorities) {
-      updatePayload.priorities = JSON.stringify(data.priorities);
+    if (priorities) {
+      updatePayload.priorities = JSON.stringify(priorities);
     }
 
     const updated = await prisma.event.update({
@@ -276,12 +284,13 @@ export class PrismaEventRepository implements IEventRepository {
     data: Partial<Omit<TaskModel, "id" | "eventId">>
   ): Promise<TaskModel> {
     await ensureInit();
-    const updatePayload: any = { ...data };
-    if (data.dueDate) {
-      updatePayload.dueDate = new Date(`${data.dueDate}T00:00:00Z`);
+    const { dependencyLinks, dueDate, ...rest } = data;
+    const updatePayload: Prisma.TaskUpdateInput = { ...rest };
+    if (dueDate) {
+      updatePayload.dueDate = new Date(`${dueDate}T00:00:00Z`);
     }
-    if (data.dependencyLinks) {
-      updatePayload.dependencyLinks = JSON.stringify(data.dependencyLinks);
+    if (dependencyLinks) {
+      updatePayload.dependencyLinks = JSON.stringify(dependencyLinks);
     }
 
     const updated = await prisma.task.update({

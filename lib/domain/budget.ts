@@ -51,7 +51,7 @@ export function calculateWeightedPercentages(
   const pool = 1.0 - minContingency;
 
   // Compute weight multipliers: item at index 0 gets highest boost, diminishing down
-  const weights: Record<CategoryKey, number> = {} as any;
+  const weights = {} as Record<CategoryKey, number>;
   const numPriorities = priorities.length;
 
   for (const key of CATEGORY_KEYS) {
@@ -76,7 +76,7 @@ export function calculateWeightedPercentages(
     .filter(([k]) => k !== contingencyKey)
     .reduce((sum, [, w]) => sum + w, 0);
 
-  const finalPercentages: Record<CategoryKey, number> = {} as any;
+  const finalPercentages = {} as Record<CategoryKey, number>;
   for (const key of CATEGORY_KEYS) {
     if (key === contingencyKey) {
       finalPercentages[key] = minContingency;
@@ -143,7 +143,7 @@ export function computeBudgetSummary(
     0
   );
 
-  const categoryAllocations: Record<CategoryKey, number> = {} as any;
+  const categoryAllocations = {} as Record<CategoryKey, number>;
 
   for (const key of CATEGORY_KEYS) {
     if (overriddenKeys.includes(key)) {

@@ -4,25 +4,30 @@ import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { getNextAdaptiveQuestion } from "@/lib/domain/intake";
 import { CATEGORY_TAXONOMY, CategoryKey, EventType } from "@/lib/config/constants";
+import { IntakeAnswers } from "@/lib/domain/types";
 import {
   Sparkles,
   ArrowRight,
-  ArrowLeft,
   ChevronUp,
   ChevronDown,
   Check,
-  Calendar,
-  Users,
-  DollarSign,
-  Building,
-  ShieldCheck,
-  HelpCircle,
 } from "lucide-react";
+
+interface WizardAnswers extends IntakeAnswers {
+  eventType: EventType;
+  title: string;
+  date: string;
+  location: string;
+  guestCount: number;
+  totalBudget: number;
+  currency: string;
+  venueType: "indoor" | "outdoor" | "hybrid";
+}
 
 export function IntakeWizardClient() {
   const router = useRouter();
 
-  const [answers, setAnswers] = useState<any>({
+  const [answers, setAnswers] = useState<WizardAnswers>({
     eventType: "wedding",
     title: "",
     date: new Date(Date.now() + 180 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10),
@@ -78,12 +83,12 @@ export function IntakeWizardClient() {
         setErrorMessage("Please select a target celebration date.");
         return;
       }
-      setAnswers((prev: any) => ({
+      setAnswers((prev) => ({
         ...prev,
         title: prev.title.trim() || `${prev.eventType.toUpperCase()} Celebration`,
       }));
     } else if (currentQuestion?.id === "q_priorities") {
-      setAnswers((prev: any) => ({
+      setAnswers((prev) => ({
         ...prev,
         priorities,
       }));
@@ -91,7 +96,7 @@ export function IntakeWizardClient() {
   };
 
   const handleSelectOption = (fieldKey: string, value: string) => {
-    setAnswers((prev: any) => ({
+    setAnswers((prev) => ({
       ...prev,
       [fieldKey]: value,
     }));
@@ -120,9 +125,10 @@ export function IntakeWizardClient() {
 
       const createdEvent = await res.json();
       router.push(`/events/${createdEvent.id}`);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Intake submission failed:", err);
-      setErrorMessage(err.message || "An unexpected error occurred. Please try again.");
+      const message = err instanceof Error ? err.message : "An unexpected error occurred. Please try again.";
+      setErrorMessage(message);
       setIsSubmitting(false);
     }
   };
@@ -197,7 +203,7 @@ export function IntakeWizardClient() {
                 <button
                   key={t}
                   type="button"
-                  onClick={() => setAnswers((prev: any) => ({ ...prev, eventType: t }))}
+                  onClick={() => setAnswers((prev) => ({ ...prev, eventType: t }))}
                   className={`p-3 rounded-xl border text-center text-xs font-bold capitalize transition ${
                     answers.eventType === t
                       ? "bg-brand-50 text-brand-800 border-brand-300 ring-2 ring-brand-500 ring-offset-1"

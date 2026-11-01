@@ -82,10 +82,6 @@ export function simulateWhatIf(params: SimulationParams): SimulationConsequenceR
   const originalCateringCostPerHead = originalCatering.costPerHead;
   const newCateringCostPerHead = simulatedCatering.costPerHead;
 
-  // Catering delta from pure guest expansion at original unit cost
-  const directCateringHeadcountDelta =
-    Math.round(guestDelta * originalCateringCostPerHead * 100) / 100;
-
   // Actual catering allocation change in the new budget
   const cateringTotalDelta =
     Math.round((simulatedCatering.allocatedAmount - originalCatering.allocatedAmount) * 100) / 100;

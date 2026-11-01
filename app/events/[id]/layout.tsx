@@ -1,6 +1,5 @@
 import React from "react";
 import { notFound } from "next/navigation";
-import Link from "next/link";
 import { eventRepository } from "@/lib/data/repositories/prisma-event-repository";
 import { formatCurrency, formatDate } from "@/lib/utils/formatting";
 import { calculateDaysRemaining } from "@/lib/domain/timeline";

@@ -19,7 +19,7 @@ export class DeterministicRuleBasedPlanner implements LLMProvider {
   public async generateSimulationNarrative(
     input: SimulationNarrativeInput
   ): Promise<SimulationNarrativeOutput> {
-    const { eventType, consequenceReport, currency, totalBudget } = input;
+    const { eventType, consequenceReport, currency } = input;
     const rep = consequenceReport;
 
     // 1. Headline

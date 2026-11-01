@@ -1,5 +1,5 @@
 import React from "react";
-import { Info, Sparkles } from "lucide-react";
+import { Sparkles } from "lucide-react";
 
 export function DemoModeBanner() {
   const isKeyConfigured = Boolean(

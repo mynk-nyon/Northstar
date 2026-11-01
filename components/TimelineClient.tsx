@@ -5,7 +5,6 @@ import { TaskModel } from "@/lib/domain/types";
 import {
   PHASE_LABELS,
   TIMELINE_PHASES,
-  TimelinePhase,
   CATEGORY_TAXONOMY,
 } from "@/lib/config/constants";
 import { calculateDaysRemaining, groupTasksByPhase } from "@/lib/domain/timeline";
@@ -13,13 +12,10 @@ import { formatDate } from "@/lib/utils/formatting";
 import { cn } from "@/lib/utils/cn";
 import {
   CheckCircle2,
-  Clock,
-  AlertCircle,
   Kanban,
   ListTodo,
   User,
   Tag,
-  ChevronRight,
   Filter,
   AlertTriangle,
 } from "lucide-react";
@@ -31,7 +27,6 @@ interface TimelineClientProps {
 
 export function TimelineClient({
   initialTasks,
-  eventDate,
 }: TimelineClientProps) {
   const [tasks, setTasks] = useState<TaskModel[]>(initialTasks);
   const [viewMode, setViewMode] = useState<"checklist" | "kanban">("checklist");
@@ -69,13 +64,6 @@ export function TimelineClient({
   });
 
   const grouped = groupTasksByPhase(filteredTasks);
-
-  const statusIcons: Record<string, any> = {
-    todo: Clock,
-    in_progress: Clock,
-    blocked: AlertCircle,
-    done: CheckCircle2,
-  };
 
   const statusColors: Record<string, string> = {
     todo: "bg-slate-100 text-slate-700 border-slate-200",
@@ -273,7 +261,7 @@ export function TimelineClient({
                           <select
                             value={task.status}
                             onChange={(e) =>
-                              handleStatusChange(task.id, e.target.value as any)
+                              handleStatusChange(task.id, e.target.value as TaskModel["status"])
                             }
                             aria-label={`Status for task "${task.title}"`}
                             className={cn(

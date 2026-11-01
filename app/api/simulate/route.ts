@@ -43,24 +43,24 @@ export async function POST(req: NextRequest) {
 
     // 3. Pure deterministic mathematical consequence report
     const consequenceReport = simulateWhatIf({
-      eventType: input.eventType as any,
+      eventType: input.eventType,
       originalGuestCount: input.originalGuestCount,
       simulatedGuestCount: input.simulatedGuestCount,
       originalBudget: input.originalBudget,
       simulatedBudget: input.simulatedBudget,
       venueCapacity: input.venueCapacity,
-      originalPriorities: input.priorities as any,
-      simulatedPriorities: input.priorities as any,
+      originalPriorities: input.priorities,
+      simulatedPriorities: input.priorities,
     });
 
     // 4. Generate LLM Narrative (with fallback to local rule-based planner)
     const provider = getLLMProvider();
     const narrative = await provider.generateSimulationNarrative({
-      eventType: input.eventType as any,
+      eventType: input.eventType,
       guestCount: input.simulatedGuestCount,
       totalBudget: input.simulatedBudget,
       currency: "USD",
-      priorities: (input.priorities || []) as any,
+      priorities: input.priorities || [],
       consequenceReport,
       userQuery: input.userQuery,
     });

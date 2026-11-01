@@ -42,7 +42,7 @@ export async function POST(req: NextRequest) {
 
     // 3. Generate draft using LLM provider (or fallback rule-based planner)
     const provider = getLLMProvider();
-    const draft = await provider.generateVendorDraft(input as any);
+    const draft = await provider.generateVendorDraft(input);
 
     return NextResponse.json({
       success: true,

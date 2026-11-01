@@ -372,7 +372,12 @@ export function groupTasksByPhase(
     tasks: (TaskModel & { daysRemaining: number; isOverdue: boolean })[];
   }
 > {
-  const grouped: any = {};
+  type GroupedPhase = {
+    phaseKey: TimelinePhase;
+    label: string;
+    tasks: (TaskModel & { daysRemaining: number; isOverdue: boolean })[];
+  };
+  const grouped = {} as Record<TimelinePhase, GroupedPhase>;
 
   for (const phase of TIMELINE_PHASES) {
     grouped[phase] = {
@@ -397,7 +402,7 @@ export function groupTasksByPhase(
 
   // Sort tasks within each phase by due date ascending
   for (const phase of TIMELINE_PHASES) {
-    grouped[phase].tasks.sort((a: any, b: any) =>
+    grouped[phase].tasks.sort((a, b) =>
       a.dueDate.localeCompare(b.dueDate)
     );
   }

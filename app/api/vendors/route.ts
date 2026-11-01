@@ -1,10 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { eventRepository } from "@/lib/data/repositories/prisma-event-repository";
+import { CATEGORY_KEYS } from "@/lib/config/constants";
+import { VendorModel } from "@/lib/domain/types";
 import { z } from "zod";
 
 const VendorCreateSchema = z.object({
   eventId: z.string(),
-  categoryKey: z.string(),
+  categoryKey: z.enum(CATEGORY_KEYS),
   name: z.string().trim().min(1).max(100),
   contact: z.string().trim().max(100),
   quoteAmount: z.number().min(0).default(0),
@@ -54,7 +56,7 @@ export async function POST(req: NextRequest) {
     }
 
     const { eventId, ...vendorData } = parsed.data;
-    const created = await eventRepository.createVendor(eventId, vendorData as any);
+    const created = await eventRepository.createVendor(eventId, vendorData as Omit<VendorModel, "id" | "eventId">);
     return NextResponse.json(created, { status: 201 });
   } catch (error) {
     console.error("POST /api/vendors error:", error);
@@ -78,7 +80,7 @@ export async function PATCH(req: NextRequest) {
     }
 
     const { id, ...vendorData } = parsed.data;
-    const updated = await eventRepository.updateVendor(id, vendorData as any);
+    const updated = await eventRepository.updateVendor(id, vendorData as Partial<Omit<VendorModel, "id" | "eventId">>);
     return NextResponse.json(updated);
   } catch (error) {
     console.error("PATCH /api/vendors error:", error);

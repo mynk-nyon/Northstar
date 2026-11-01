@@ -1,6 +1,5 @@
 import {
   SimulationConsequenceReport,
-  TradeoffAlternative,
 } from "@/lib/domain/types";
 import { CategoryKey, EventType } from "@/lib/config/constants";
 

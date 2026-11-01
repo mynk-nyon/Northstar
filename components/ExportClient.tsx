@@ -3,11 +3,10 @@
 import React from "react";
 import { EventModel, BudgetCategoryModel, TaskModel, VendorModel } from "@/lib/domain/types";
 import { formatCurrency, formatDate } from "@/lib/utils/formatting";
-import { CATEGORY_TAXONOMY, PHASE_LABELS, TIMELINE_PHASES } from "@/lib/config/constants";
+import { CATEGORY_TAXONOMY, TIMELINE_PHASES, CategoryKey } from "@/lib/config/constants";
 import { computeBudgetSummary } from "@/lib/domain/budget";
 import { groupTasksByPhase } from "@/lib/domain/timeline";
-import { Printer, Download, ArrowLeft } from "lucide-react";
-import Link from "next/link";
+import { Printer, Download } from "lucide-react";
 
 interface ExportClientProps {
   event: EventModel;
@@ -30,11 +29,11 @@ export function ExportClient({
     manualOverrides: categories.reduce((acc, c) => {
       if (c.isManualOverride) acc[c.categoryKey] = c.allocatedAmount;
       return acc;
-    }, {} as any),
+    }, {} as Partial<Record<CategoryKey, number>>),
     committedAmounts: categories.reduce((acc, c) => {
       acc[c.categoryKey] = c.committedAmount;
       return acc;
-    }, {} as any),
+    }, {} as Partial<Record<CategoryKey, number>>),
   });
 
   const groupedTasks = groupTasksByPhase(tasks);

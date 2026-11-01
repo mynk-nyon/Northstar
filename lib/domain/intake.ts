@@ -314,7 +314,7 @@ export function buildEventFromIntake(answers: IntakeAnswers): {
     totalBudget,
     currency: answers.currency || "USD",
     venueCapacity,
-    venueType: (answers.venueType as any) || "indoor",
+    venueType: answers.venueType || "indoor",
     venueHours: answers.venueHours || 6,
     cateringRestrictions: answers.cateringRestrictions || null,
     priorities,

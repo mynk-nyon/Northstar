@@ -1,28 +1,24 @@
 "use client";
 
-import React, { useState, useEffect, useMemo, useCallback } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import {
   EventModel,
   BudgetCategoryModel,
   SimulationConsequenceReport,
   TradeoffAlternative,
 } from "@/lib/domain/types";
+import { SimulationNarrativeOutput } from "@/lib/ai/types";
 import { computeBudgetSummary } from "@/lib/domain/budget";
 import { simulateWhatIf } from "@/lib/domain/simulator";
-import { formatCurrency, formatPercent } from "@/lib/utils/formatting";
+import { formatCurrency } from "@/lib/utils/formatting";
 import { CATEGORY_TAXONOMY, CategoryKey } from "@/lib/config/constants";
 import {
   Sparkles,
   AlertTriangle,
-  ShieldCheck,
-  TrendingUp,
-  TrendingDown,
   RotateCcw,
   Sliders,
   DollarSign,
   Users,
-  CheckCircle,
-  Calendar,
   ChevronUp,
   ChevronDown,
   Edit2,
@@ -52,7 +48,7 @@ export function BudgetSimulatorClient({
   const [dateShiftDays, setDateShiftDays] = useState<number>(0);
 
   // AI Narrative state
-  const [aiNarrative, setAiNarrative] = useState<any>(null);
+  const [aiNarrative, setAiNarrative] = useState<SimulationNarrativeOutput | null>(null);
   const [isAiLoading, setIsAiLoading] = useState<boolean>(false);
   const [liveAnnouncement, setLiveAnnouncement] = useState<string>("");
 
