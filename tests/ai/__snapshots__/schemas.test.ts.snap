@@ -1,0 +1,60 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Zod Schemas and Validations > verifies snapshot of schema definitions 1`] = `
+{
+  "eventCreateKeys": [
+    "cateringRestrictions",
+    "currency",
+    "date",
+    "guestCount",
+    "location",
+    "notes",
+    "priorities",
+    "title",
+    "totalBudget",
+    "type",
+    "venueCapacity",
+    "venueHours",
+    "venueType",
+  ],
+  "simulateRequestKeys": [
+    "eventId",
+    "eventType",
+    "originalBudget",
+    "originalGuestCount",
+    "priorities",
+    "simulatedBudget",
+    "simulatedGuestCount",
+    "userQuery",
+    "venueCapacity",
+  ],
+  "simulationNarrativeOutputKeys": [
+    "capacityAdvisory",
+    "categoryImpactAnalysis",
+    "contingencyAdvisory",
+    "headline",
+    "recommendedAlternatives",
+    "summaryNarrative",
+  ],
+  "vendorDraftOutputKeys": [
+    "body",
+    "keyPointsHighlighted",
+    "subject",
+    "suggestedNegotiationLever",
+  ],
+  "vendorDraftRequestKeys": [
+    "budgetCeiling",
+    "categoryKey",
+    "currency",
+    "eventDate",
+    "eventType",
+    "guestCount",
+    "location",
+    "messageType",
+    "notes",
+    "specificQuestions",
+    "vendorContact",
+    "vendorName",
+  ],
+}
+`;

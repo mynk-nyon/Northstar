@@ -1,0 +1,82 @@
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Event {
+  id                   String           @id @default(cuid())
+  title                String
+  type                 String           // 'wedding' | 'birthday' | 'community'
+  date                 DateTime
+  location             String
+  guestCount           Int
+  totalBudget          Float
+  currency             String           @default("USD")
+  venueCapacity        Int?
+  venueType            String           @default("indoor") // 'indoor' | 'outdoor' | 'hybrid'
+  venueHours           Int?
+  cateringRestrictions String?
+  priorities           String           // JSON stringified array of category keys
+  notes                String?
+  createdAt            DateTime         @default(now())
+  updatedAt            DateTime         @updatedAt
+
+  categories           BudgetCategory[]
+  tasks                Task[]
+  vendors              Vendor[]
+}
+
+model BudgetCategory {
+  id               String   @id @default(cuid())
+  eventId          String
+  categoryKey      String
+  name             String
+  allocatedAmount  Float
+  committedAmount  Float    @default(0)
+  isManualOverride Boolean  @default(false)
+  notes            String?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  event            Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  @@unique([eventId, categoryKey])
+}
+
+model Task {
+  id              String   @id @default(cuid())
+  eventId         String
+  title           String
+  dueDate         DateTime
+  categoryKey     String
+  status          String   @default("todo") // 'todo' | 'in_progress' | 'blocked' | 'done'
+  owner           String?
+  phase           String   @default("one_month") // 'twelve_months' | 'six_months' | 'three_months' | 'one_month' | 'week_of' | 'day_of'
+  dependencyLinks String?  // JSON stringified array of task IDs
+  notes           String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  event           Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+}
+
+model Vendor {
+  id             String   @id @default(cuid())
+  eventId        String
+  categoryKey    String
+  name           String
+  contact        String
+  quoteAmount    Float    @default(0)
+  depositAmount  Float    @default(0)
+  balanceDue     Float    @default(0)
+  contractStatus String   @default("contacted") // 'contacted' | 'quoted' | 'negotiating' | 'contract_signed' | 'deposit_paid' | 'completed' | 'cancelled'
+  notes          String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  event          Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+}
