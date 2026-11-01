@@ -1,0 +1,12 @@
+# Netlify configuration for Next.js App Router with Prisma
+
+[build]
+  command = "prisma generate && npx prisma db push && next build"
+  publish = ".next"
+
+[build.environment]
+  NODE_VERSION = "20"
+  DATABASE_URL = "file:/tmp/dev.db"
+
+[[plugins]]
+  package = "@netlify/plugin-nextjs"

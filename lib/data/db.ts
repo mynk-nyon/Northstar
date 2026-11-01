@@ -2,8 +2,14 @@ import { PrismaClient } from "@prisma/client";
 import fs from "fs";
 import path from "path";
 
-// Support for serverless ephemeral filesystem on Vercel
-if (process.env.VERCEL) {
+// Support for serverless ephemeral filesystem on Netlify, Vercel, and AWS Lambda
+const isServerless = Boolean(
+  process.env.NETLIFY ||
+  process.env.VERCEL ||
+  process.env.AWS_LAMBDA_FUNCTION_NAME
+);
+
+if (isServerless) {
   if (!process.env.DATABASE_URL || process.env.DATABASE_URL.includes("./dev.db")) {
     process.env.DATABASE_URL = "file:/tmp/dev.db";
   }
